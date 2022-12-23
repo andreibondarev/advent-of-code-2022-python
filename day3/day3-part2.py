@@ -12,16 +12,18 @@ with open('./input.txt') as f:
 
   while line:
     rucksack_1 = line.strip()
+    # Get the second line
     rucksack_2 = next(f).strip()
+    # Get the third line
     rucksack_3 = next(f).strip()
 
     intersection_dict = set(rucksack_1) & set(rucksack_2) & set(rucksack_3)
 
-    # 3: Determine the priority
+    # Determine the priority
     letter = next(iter(intersection_dict))
     priority = get_priority(letter)
 
-    # 4: Sum up the results
+    # Sum up the results
     total += priority
 
     # Get the next line (first elf of the next group) to satify the while loop above
