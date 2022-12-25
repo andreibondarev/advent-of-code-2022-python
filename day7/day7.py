@@ -94,7 +94,7 @@ def process_output(f, pwd, FILE_SYSTEM):
 
         process_output(f, pwd, FILE_SYSTEM)
 
-with open('./example.txt') as f:
+with open('./input.txt') as f:
   # Current working directory
   pwd = []
 
