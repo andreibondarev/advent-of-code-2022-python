@@ -47,15 +47,19 @@ def calculate_dir_size(pwd, size):
   # adds up directory size and pop off an element 
   # for the next iteration
   while len(path_array) > 0:
-    path = ''.join(path_array)
+    path = '/'.join(path_array)
     if DIR_SIZES.get(path):
       DIR_SIZES[path] += int(size)
     else:
       DIR_SIZES[path] = int(size)
-    
+
     path_array.pop()
 
-  # import pdb; pdb.set_trace()
+  # Set the top level tally
+  if DIR_SIZES.get('/'):
+    DIR_SIZES['/'] += int(size)
+  else:
+    DIR_SIZES['/'] = int(size)
 
 def process_output(f, pwd, FILE_SYSTEM):
   output = f.readline().strip()
@@ -108,4 +112,19 @@ total = 0
 for k,v in DIR_SIZES.items():
   if v <= 100000:
     total += v
-print(total)
+print("Part 1 answer: " + str(total))
+
+# Part 2
+TOTAL_DISK_AVAILABLE = 70000000
+UNUSED_SPACE_NEEDED =  30000000
+USED_SPACE = DIR_SIZES['/']
+CURRENT_AVAILABLE_SPACE = TOTAL_DISK_AVAILABLE - USED_SPACE
+
+assert(CURRENT_AVAILABLE_SPACE < UNUSED_SPACE_NEEDED)
+
+possible_candidates = []
+for v in list(DIR_SIZES.values()):
+  if v > (UNUSED_SPACE_NEEDED - CURRENT_AVAILABLE_SPACE):
+    possible_candidates.append(v)
+
+print(min(possible_candidates))
