@@ -1,4 +1,6 @@
 # How the file tree will be represented
+# "i": 583 # <= file
+# "e": { ... } # <= directory
 example = {
   "a": {
     "e": {
@@ -20,16 +22,40 @@ example = {
 
 GO_UP = '..'
 FILE_SYSTEM = {}
-PWD = []
 
-# Missing Ruby right now
 def dig(self, *keys):
+  """
+  Method to traverse the hash by specifying multiple keys
+
+  :self: The hash itself
+  :*keys: N hash key names
+  :return: Hash key value
+  """
   for key in keys:
     if type(self) in [dict, list]:
       self = self[key]
     else:
       raise IndexError('Bad index')
   return self
+
+DIR_SIZES = {}
+def calculate_dir_size(pwd, size):
+  # Copy the original pwd to avoid directly modifying it
+  path_array = pwd.copy()
+
+  # As we go up the pwd tree,
+  # adds up directory size and pop off an element 
+  # for the next iteration
+  while len(path_array) > 0:
+    path = ''.join(path_array)
+    if DIR_SIZES.get(path):
+      DIR_SIZES[path] += int(size)
+    else:
+      DIR_SIZES[path] = int(size)
+    
+    path_array.pop()
+
+  # import pdb; pdb.set_trace()
 
 def process_output(f, pwd, FILE_SYSTEM):
   output = f.readline().strip()
@@ -64,9 +90,11 @@ def process_output(f, pwd, FILE_SYSTEM):
         
         dig(FILE_SYSTEM, *pwd)[file_name] = size
 
+        calculate_dir_size(pwd, size)
+
         process_output(f, pwd, FILE_SYSTEM)
 
-with open('./input.txt') as f:
+with open('./example.txt') as f:
   # Current working directory
   pwd = []
 
@@ -76,10 +104,8 @@ with open('./input.txt') as f:
 
   process_output(f, pwd, FILE_SYSTEM)
 
-print(FILE_SYSTEM)
-
-# Get rid of files in the root dir
-# We don't need to count them
-# for k,v in FILE_SYSTEM.copy().items():
-#   if isinstance(v, int):
-#     del FILE_SYSTEM[k]
+total = 0
+for k,v in DIR_SIZES.items():
+  if v <= 100000:
+    total += v
+print(total)
